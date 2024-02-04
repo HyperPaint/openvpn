@@ -15,7 +15,19 @@ error() {
 }
 
 prepare_app() {
-  :
+  if [ -d "/dev/net" ]; then
+    log "/dev/net found"
+  else
+    mkdir "/dev/net" || { error "$you_need_run_container_in_privileged_mode"; return 1; }
+    log "/dev/net created"
+  fi
+
+  if [ -c "/dev/net/tun" ]; then
+    log "/dev/net/tun found"
+  else
+    mknod /dev/net/tun c 10 200 || { error "$you_need_run_container_in_privileged_mode"; return 1; }
+    log "/dev/net/tun created"
+  fi
 }
 
 start_app() {
