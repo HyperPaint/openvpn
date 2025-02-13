@@ -1,5 +1,6 @@
 #!/bin/sh
 author="hyperpaint"
-name="openvpn-server"
-tag="3"
+name="openvpn-client"
+tag="2"
+
 docker build -t "$author/$name:$tag" .

@@ -14,17 +14,12 @@ fi
 if [[ -f "$CERTS_DIR/client_$client_name.key" ]]; then
   log "$CERTS_DIR/client_$client_name.key found"
 else
-  log "$CERTS_DIR/client_$client_name.key not found, creating..."
-
-  openssl genrsa -out "$CERTS_DIR/client_$client_name.key" "$KEY_POWER"
-  chmod 755 "$CERTS_DIR/client_$client_name.key"
-  log "$CERTS_DIR/client_$client_name.key created"
+  error "$CERTS_DIR/client_$client_name.key not found"
+  exit 1
 fi
 
 if [ -f "$CERTS_DIR/client_$client_name.pem" ]; then
-  log "$CERTS_DIR/client_$client_name.pem found"
-else
-  log "$CERTS_DIR/client_$client_name.pem not found, creating..."
+  log "$CERTS_DIR/client_$client_name.pem found, recreating..."
 
   openssl req -new -key "$CERTS_DIR/client_$client_name.key" -subj "${CERTS_DN_CLIENT_BASE}_${client_name}" -out "$CERTS_DIR/client_$client_name.csr"
   chmod 755 "$CERTS_DIR/client_$client_name.csr"
@@ -33,6 +28,8 @@ else
   openssl x509 -req -in "$CERTS_DIR/client_$client_name.csr" -days "$ISSUE_DAYS" -CA "$CERTS_DIR/ca.pem" -CAkey "$CERTS_DIR/ca.key" -CAcreateserial -out "$CERTS_DIR/client_$client_name.pem"
   chmod 755 "$CERTS_DIR/client_$client_name.pem"
   log "$CERTS_DIR/client_$client_name.pem created"
+else
+  error "$CERTS_DIR/client_$client_name.pem not found"
 fi
 
 if [[ -f "$CCD_DIR/client_$client_name" ]]; then

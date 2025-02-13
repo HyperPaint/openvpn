@@ -1,0 +1,16 @@
+# UDP
+#<connection>
+#    remote localhost 1194 tcp
+#    explicit-exit-notify
+#</connection>
+
+# TCP
+#<connection>
+#    remote localhost 1194 tcp
+#</connection>
+
+# SOCKS5
+#<connection>
+#    remote localhost 1194 tcp
+#    socks-proxy localhost 8080
+#</connection>
