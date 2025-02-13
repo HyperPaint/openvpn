@@ -1,6 +1,6 @@
 FROM alpine:3
 
-RUN apk add bash openssl iptables openvpn
+RUN apk add bash openssl iptables openvpn=2.6.12-r1
 
 COPY --chown=root:root --chmod=755 ./files/ /
 COPY --chown=root:root --chmod=755 ./hyperpaint-bash-docker-lib/ /root/scripts/hbdl/
