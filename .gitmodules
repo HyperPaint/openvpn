@@ -1,3 +1,6 @@
 [submodule "openvpn-server/hyperpaint-bash-docker-lib"]
 	path = openvpn-server/hyperpaint-bash-docker-lib
 	url = git@github.com:HyperPaint/bash-docker-lib.git
+[submodule "openvpn-client/hyperpaint-bash-docker-lib"]
+	path = openvpn-client/hyperpaint-bash-docker-lib
+	url = git@github.com:HyperPaint/bash-docker-lib.git
