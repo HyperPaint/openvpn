@@ -1,11 +1,9 @@
-FROM hyperpaint/alpine:3-base
+FROM alpine:3
 
-# OpenVPN
-RUN apk add openvpn
+RUN apk add bash openvpn=2.6.12-r1
 
-# Файлы
 COPY --chown=root:root --chmod=755 ./files/ /
+COPY --chown=root:root --chmod=755 ./hyperpaint-bash-docker-lib/ /root/scripts/hbdl/
 
-# Запуск
-WORKDIR "/root/"
-CMD ["/bin/sh","-c","/root/scripts/start.sh"]
+WORKDIR "/root/scripts/"
+ENTRYPOINT ["/bin/bash","-c","/root/scripts/hbdl/entrypoint.sh"]
