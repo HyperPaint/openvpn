@@ -6,7 +6,7 @@ source "/root/scripts/hbdl/log.sh"
 
 # certs
 if [ -d "$CERTS_DIR" ]; then
-  log "$CERTS_DIR/ccd/ found"
+  log "$CERTS_DIR/ found"
 else
   log "$CERTS_DIR/ not found, creating..."
 
