@@ -1,4 +1,4 @@
-FROM alpine:3
+FROM alpine:3.21.3
 
 RUN apk add bash openvpn=2.6.12-r1
 
