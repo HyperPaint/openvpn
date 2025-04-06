@@ -1,3 +1,3 @@
 #!/bin/bash
 
-openvpn "/root/client.ovpn" &
+openvpn --config "/root/client.ovpn" &
