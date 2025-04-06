@@ -139,11 +139,13 @@ if [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
     echo ''
     echo 'topology subnet'
     echo 'client-to-client'
-    echo "server $OPENVPN_AUTO_CONFIG_SERVER_NETWORK"
+    echo "server $OPENVPN_AUTO_CONFIG_SERVER"
     echo ''
     echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
     echo "client-config-dir $CCD_DIR/"
-    echo 'ccd-exclusive'
+    if [[ "$OPENVPN_AUTO_CONFIG_CCD_EXCLUSIVE" == '1' ]]; then
+      echo 'ccd-exclusive'
+    fi
     echo ''
     if [[ -f "$WORK_DIR/push" ]]; then
       cat "$WORK_DIR/push"
@@ -178,11 +180,13 @@ if [[ "$OPENVPN_AUTO_CONFIG" == "udp" ]]; then
     echo ''
     echo 'topology subnet'
     echo 'client-to-client'
-    echo "server $OPENVPN_AUTO_CONFIG_SERVER_NETWORK"
+    echo "server $OPENVPN_AUTO_CONFIG_SERVER"
     echo ''
     echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
     echo "client-config-dir $CCD_DIR/"
-    echo 'ccd-exclusive'
+    if [[ "$OPENVPN_AUTO_CONFIG_CCD_EXCLUSIVE" == '1' ]]; then
+      echo 'ccd-exclusive'
+    fi
     echo ''
     if [[ -f "$WORK_DIR/push" ]]; then
       cat "$WORK_DIR/push"
