@@ -142,7 +142,7 @@ if [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
     echo "server $OPENVPN_AUTO_CONFIG_SERVER"
     echo ''
     echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
-    echo "client-config-dir $CCD_DIR/"
+    echo "client-config-dir $CCD_DIR"
     if [[ "$OPENVPN_AUTO_CONFIG_CCD_EXCLUSIVE" == '1' ]]; then
       echo 'ccd-exclusive'
     fi
@@ -183,7 +183,7 @@ if [[ "$OPENVPN_AUTO_CONFIG" == "udp" ]]; then
     echo "server $OPENVPN_AUTO_CONFIG_SERVER"
     echo ''
     echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
-    echo "client-config-dir $CCD_DIR/"
+    echo "client-config-dir $CCD_DIR"
     if [[ "$OPENVPN_AUTO_CONFIG_CCD_EXCLUSIVE" == '1' ]]; then
       echo 'ccd-exclusive'
     fi
