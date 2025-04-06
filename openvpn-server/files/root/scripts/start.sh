@@ -30,7 +30,7 @@ fi
 if [[ "$NAT_ENABLED" == 1 ]]; then
   array=("${NAT//,/ }")
 
-  if [[ "$(sysctl --values net.ipv4.ip_forward)" -eq 0 ]]; then
+  if [[ "$(sysctl -n net.ipv4.ip_forward)" -eq 0 ]]; then
     sysctl net.ipv4.ip_forward=1 || { error "You need to run 'sysctl net.ipv4.ip_forward=1' on host system";  exit 1; }
   fi
 
