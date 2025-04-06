@@ -139,7 +139,7 @@ if [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
     echo ''
     echo 'topology subnet'
     echo 'client-to-client'
-    echo 'server 10.8.0.0 255.255.255.0'
+    echo "server $OPENVPN_AUTO_CONFIG_SERVER_NETWORK"
     echo ''
     echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
     echo "client-config-dir $CCD_DIR/"
@@ -178,7 +178,7 @@ if [[ "$OPENVPN_AUTO_CONFIG" == "udp" ]]; then
     echo ''
     echo 'topology subnet'
     echo 'client-to-client'
-    echo 'server 10.8.0.0 255.255.255.0'
+    echo "server $OPENVPN_AUTO_CONFIG_SERVER_NETWORK"
     echo ''
     echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
     echo "client-config-dir $CCD_DIR/"
