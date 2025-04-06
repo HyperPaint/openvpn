@@ -49,7 +49,7 @@ log "$OVPN_DIR/$client_name.ovpn creating..."
   echo 'nobind'
   echo ''
   if [[ -f "$WORK_DIR/connection" ]]; then
-    cat "$WORK_DIR/connection"
+    sed "s/SERVER_ADDRESS/$OPENVPN_SERVER_ADDRESS/g" "$WORK_DIR/connection" | sed "s/SERVER_PORT/$OPENVPN_SERVER_PORT/g"
   fi
   echo ''
   echo 'allow-pull-fqdn'
