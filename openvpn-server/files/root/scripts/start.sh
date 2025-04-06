@@ -94,7 +94,7 @@ if [[ "$WHITELIST_ENABLED" == 1 ]]; then
 fi
 
 if [[ "$BLACKLIST_ENABLED" == 1 ]]; then
-  if [[ "$BLACKLIST_ENABLED" == 1 ]]; then
+  if [[ "$WHITELIST_ENABLED" == 1 ]]; then
     error "Blacklist and whitelist enabled simultaneously"
     exit 1
   fi
