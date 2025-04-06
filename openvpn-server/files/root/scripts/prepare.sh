@@ -123,8 +123,8 @@ else
 fi
 
 # server.conf
-if [[ "$VPN_AUTO_CONFIG" == "tcp" ]]; then
-  log "VPN auto-config as tcp server"
+if [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
+  log "VPN auto-config as TCP server"
 
   {
     echo 'dev tun'
@@ -139,11 +139,13 @@ if [[ "$VPN_AUTO_CONFIG" == "tcp" ]]; then
     echo ''
     echo 'topology subnet'
     echo 'client-to-client'
-    echo 'server 10.8.0.0 255.255.255.0'
+    echo "server $OPENVPN_AUTO_CONFIG_SERVER"
     echo ''
     echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
-    echo "client-config-dir $CCD_DIR/"
-    echo 'ccd-exclusive'
+    echo "client-config-dir $CCD_DIR"
+    if [[ "$OPENVPN_AUTO_CONFIG_CCD_EXCLUSIVE" == '1' ]]; then
+      echo 'ccd-exclusive'
+    fi
     echo ''
     if [[ -f "$WORK_DIR/push" ]]; then
       cat "$WORK_DIR/push"
@@ -162,8 +164,8 @@ if [[ "$VPN_AUTO_CONFIG" == "tcp" ]]; then
   log "$WORK_DIR/server.conf created"
 fi
 
-if [[ "$VPN_AUTO_CONFIG" == "udp" ]]; then
-  log "VPN auto-config as udp server"
+if [[ "$OPENVPN_AUTO_CONFIG" == "udp" ]]; then
+  log "VPN auto-config as UDP server"
 
   {
     echo 'dev tun'
@@ -178,11 +180,13 @@ if [[ "$VPN_AUTO_CONFIG" == "udp" ]]; then
     echo ''
     echo 'topology subnet'
     echo 'client-to-client'
-    echo 'server 10.8.0.0 255.255.255.0'
+    echo "server $OPENVPN_AUTO_CONFIG_SERVER"
     echo ''
     echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
-    echo "client-config-dir $CCD_DIR/"
-    echo 'ccd-exclusive'
+    echo "client-config-dir $CCD_DIR"
+    if [[ "$OPENVPN_AUTO_CONFIG_CCD_EXCLUSIVE" == '1' ]]; then
+      echo 'ccd-exclusive'
+    fi
     echo ''
     if [[ -f "$WORK_DIR/push" ]]; then
       cat "$WORK_DIR/push"
