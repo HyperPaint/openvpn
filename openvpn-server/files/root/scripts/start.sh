@@ -50,7 +50,7 @@ if [[ "$WHITELIST_ENABLED" == 1 ]]; then
   iptables --verbose --policy FORWARD DROP || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
 
   # shellcheck disable=SC2207
-  array=($(echo "$WHITELIST" | sed 's/ /;/g' | sed 's/,/ /g'))
+  array=($(echo "$WHITELIST" | sed "s/ /;/g" | sed "s/,/ /g"))
   regex="^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/([0-9\*]+);([0-9\*]+)/([A-Za-z\*]+)$"
 
   for item in "${array[@]}"; do
@@ -61,32 +61,32 @@ if [[ "$WHITELIST_ENABLED" == 1 ]]; then
     port="$(echo "$item" | sed -E "s|$regex|\3|g")" || { error "Can't parse port from whitelist"; exit 1; }
     protocol="$(echo "$item" | sed -E "s|$regex|\4|g")" || { error "Can't parse protocol from whitelist"; exit 1; }
 
-    if [[ "$mask" != '32' ]]; then
-      if [[ "$port" != '*' ]]; then
-        if [[ "$protocol" != '*' ]]; then
+    if [[ "$mask" != "32" ]]; then
+      if [[ "$port" != "\*" ]]; then
+        if [[ "$protocol" != "\*" ]]; then
           iptables --verbose --append FORWARD --destination "$address" --jump ACCEPT || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         else
           iptables --verbose --append FORWARD --protocol "$protocol" --destination "$address" --jump ACCEPT || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         fi
       else
-        if [[ "$protocol" != '*' ]]; then
+        if [[ "$protocol" != "\*" ]]; then
           iptables --verbose --append FORWARD --destination "$address" --dport "$port" --jump ACCEPT || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         else
           iptables --verbose --append FORWARD --protocol "$protocol" --destination "$address"  --dport "$port" --jump ACCEPT || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         fi
       fi
     else
-      if [[ "$port" != '*' ]]; then
-        if [[ "$protocol" != '*' ]]; then
+      if [[ "$port" != "\*" ]]; then
+        if [[ "$protocol" != "\*" ]]; then
           iptables --verbose --append FORWARD --destination "$address/$mask" --jump ACCEPT || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         else
           iptables --verbose --append FORWARD --protocol "$protocol" --destination "$address/$mask" --jump ACCEPT || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         fi
       else
-        if [[ "$protocol" != '*' ]]; then
+        if [[ "$protocol" != "\*" ]]; then
           iptables --verbose --append FORWARD --destination "$address/$mask" --dport "$port" --jump ACCEPT || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         else
-          iptables --verbose --append FORWARD --protocol "$protocol" --destination "$address/$mask"  --dport "$port" --jump ACCEPT || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
+          iptables --verbose --append FORWARD --protocol "$protocol" --destination "$address/$mask" --dport "$port" --jump ACCEPT || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         fi
       fi
     fi
@@ -102,7 +102,7 @@ if [[ "$BLACKLIST_ENABLED" == 1 ]]; then
   iptables --verbose --policy FORWARD ACCEPT || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
 
   # shellcheck disable=SC2207
-  array=($(echo "$BLACKLIST" | sed 's/ /;/g' | sed 's/,/ /g'))
+  array=($(echo "$BLACKLIST" | sed "s/ /;/g" | sed "s/,/ /g"))
   regex="^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/([0-9\*]+);([0-9\*]+)/([A-Za-z\*]+)$"
 
   for item in "${array[@]}"; do
@@ -113,32 +113,32 @@ if [[ "$BLACKLIST_ENABLED" == 1 ]]; then
     port="$(echo "$item" | sed -E "s|$regex|\3|g")" || { error "Can't parse port from blacklist"; exit 1; }
     protocol="$(echo "$item" | sed -E "s|$regex|\4|g")" || { error "Can't parse protocol from blacklist"; exit 1; }
 
-    if [[ "$mask" != '32' ]]; then
-      if [[ "$port" != '*' ]]; then
-        if [[ "$protocol" != '*' ]]; then
+    if [[ "$mask" != "32" ]]; then
+      if [[ "$port" != "\*" ]]; then
+        if [[ "$protocol" != "\*" ]]; then
           iptables --verbose --append FORWARD --destination "$address" --jump DROP || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         else
           iptables --verbose --append FORWARD --protocol "$protocol" --destination "$address" --jump DROP || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         fi
       else
-        if [[ "$protocol" != '*' ]]; then
+        if [[ "$protocol" != "\*" ]]; then
           iptables --verbose --append FORWARD --destination "$address" --dport "$port" --jump DROP || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         else
           iptables --verbose --append FORWARD --protocol "$protocol" --destination "$address"  --dport "$port" --jump DROP || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         fi
       fi
     else
-      if [[ "$port" != '*' ]]; then
-        if [[ "$protocol" != '*' ]]; then
+      if [[ "$port" != "\*" ]]; then
+        if [[ "$protocol" != "\*" ]]; then
           iptables --verbose --append FORWARD --destination "$address/$mask" --jump DROP || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         else
           iptables --verbose --append FORWARD --protocol "$protocol" --destination "$address/$mask" --jump DROP || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         fi
       else
-        if [[ "$protocol" != '*' ]]; then
+        if [[ "$protocol" != "\*" ]]; then
           iptables --verbose --append FORWARD --destination "$address/$mask" --dport "$port" --jump DROP || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         else
-          iptables --verbose --append FORWARD --protocol "$protocol" --destination "$address/$mask"  --dport "$port" --jump DROP || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
+          iptables --verbose --append FORWARD --protocol "$protocol" --destination "$address/$mask" --dport "$port" --jump DROP || { error "$you_need_run_container_in_privileged_mode"; exit 1; }
         fi
       fi
     fi
