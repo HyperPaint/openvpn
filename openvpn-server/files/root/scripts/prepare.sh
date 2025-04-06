@@ -124,7 +124,7 @@ fi
 
 # server.conf
 if [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
-  log "VPN auto-config as tcp server"
+  log "VPN auto-config as TCP server"
 
   {
     echo 'dev tun'
@@ -165,7 +165,7 @@ if [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
 fi
 
 if [[ "$OPENVPN_AUTO_CONFIG" == "udp" ]]; then
-  log "VPN auto-config as udp server"
+  log "VPN auto-config as UDP server"
 
   {
     echo 'dev tun'
