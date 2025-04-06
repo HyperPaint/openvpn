@@ -123,7 +123,7 @@ else
 fi
 
 # server.conf
-if [[ "$VPN_AUTO_CONFIG" == "tcp" ]]; then
+if [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
   log "VPN auto-config as tcp server"
 
   {
@@ -162,7 +162,7 @@ if [[ "$VPN_AUTO_CONFIG" == "tcp" ]]; then
   log "$WORK_DIR/server.conf created"
 fi
 
-if [[ "$VPN_AUTO_CONFIG" == "udp" ]]; then
+if [[ "$OPENVPN_AUTO_CONFIG" == "udp" ]]; then
   log "VPN auto-config as udp server"
 
   {
