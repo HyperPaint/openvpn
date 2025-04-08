@@ -213,3 +213,5 @@ else
   error "$WORK_DIR/server.conf not found"
   exit 1
 fi
+
+/root/scripts/users.sh
