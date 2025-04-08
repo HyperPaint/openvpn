@@ -10,9 +10,9 @@ if [[ "$OPENVPN_USERS_ENABLED" == 1 ]]; then
   array_full="${array[*]}"
 
   for item in "$CCD_DIR"/*; do
-    [[ -f "$item" ]] || break
+    [[ -e "$item" ]] || break
 
-    client="$(basename "$item")"
+    client="$(basename "${item/client_/}")"
 
     if [[ ! " $array_full " =~ [[:space:]]${client}[[:space:]] ]]; then
       log "Revoke $client"
@@ -21,7 +21,7 @@ if [[ "$OPENVPN_USERS_ENABLED" == 1 ]]; then
   done
 
   for item in "${array[@]}"; do
-    if [[ ! -f "$CCD_DIR/$item" ]]; then
+    if [[ ! -f "$CCD_DIR/client_$item" ]]; then
       log "Issue $item"
       /root/scripts/issue.sh "$item"
     fi
