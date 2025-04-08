@@ -1,11 +1,11 @@
 # UDP
 <connection>
-    remote SERVER_ADDRESS SERVER_PORT udp
+    remote OPENVPN_SERVER_ADDRESS OPENVPN_SERVER_PORT udp
     explicit-exit-notify
 </connection>
 
 # TCP
 <connection>
-    remote SERVER_ADDRESS SERVER_PORT tcp
+    remote OPENVPN_SERVER_ADDRESS OPENVPN_SERVER_PORT tcp
 </connection>
 

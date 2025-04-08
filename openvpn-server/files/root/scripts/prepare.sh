@@ -129,7 +129,7 @@ if [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
   {
     echo 'dev tun'
     echo 'proto tcp'
-    echo 'port 1194'
+    echo "port $OPENVPN_SERVER_PORT"
     echo ''
     echo "ca $CERTS_DIR/ca.pem"
     echo "key $CERTS_DIR/server.key"
@@ -168,7 +168,7 @@ if [[ "$OPENVPN_AUTO_CONFIG" == "udp" ]]; then
   {
     echo 'dev tun'
     echo 'proto udp'
-    echo 'port 1194'
+    echo "port $OPENVPN_SERVER_PORT"
     echo ''
     echo "ca $CERTS_DIR/ca.pem"
     echo "key $CERTS_DIR/server.key"
@@ -213,3 +213,13 @@ else
   error "$WORK_DIR/server.conf not found"
   exit 1
 fi
+
+if [[ -z "$OPENVPN_SERVER_ADDRESS" ]]; then
+  OPENVPN_SERVER_ADDRESS="$(curl "ifconfig.me")"
+  export OPENVPN_SERVER_ADDRESS
+fi
+
+log "OpenVPN server address is $OPENVPN_SERVER_ADDRESS"
+log "OpenVPN server port is $OPENVPN_SERVER_PORT"
+
+/root/scripts/users.sh

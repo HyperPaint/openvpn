@@ -1,6 +1,6 @@
 FROM alpine:3.21.3
 
-RUN apk add bash openssl=3.3.3-r0 iptables=1.8.11-r1 openvpn=2.6.12-r1
+RUN apk add bash curl openssl=3.3.3-r0 iptables=1.8.11-r1 openvpn=2.6.12-r1
 
 COPY --chown=root:root --chmod=755 ./files/ /
 COPY --chown=root:root --chmod=755 ./hyperpaint-bash-docker-lib/ /root/scripts/hbdl/
@@ -11,8 +11,11 @@ ENV ISSUE_DAYS="3600"
 ENV OPENVPN_AUTO_CONFIG="udp"
 ENV OPENVPN_AUTO_CONFIG_SERVER="10.8.0.0 255.255.255.0"
 
-ENV OPENVPN_SERVER_ADDRESS="127.0.0.1"
+ENV OPENVPN_SERVER_ADDRESS=""
 ENV OPENVPN_SERVER_PORT="1194"
+
+ENV OPENVPN_USERS_ENABLED="1"
+ENV OPENVPN_USERS=""
 
 ENV NAT_ENABLED="1"
 ENV NAT="10.0.0.0/8"
