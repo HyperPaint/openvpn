@@ -44,7 +44,7 @@ services:
           cpus: "0.1"
           memory: "32M"
     environment:
-      VPN_AUTO_CONFIG: "udp"
+      OPENVPN_AUTO_CONFIG: "udp"
       OPENVPN_USERS: "client1,client2,client3"
     image: hyperpaint/openvpn-server:1.2.0-2.6.12-r1
     networks:
@@ -71,7 +71,7 @@ services:
           cpus: "0.1"
           memory: "32M"
     environment:
-      VPN_AUTO_CONFIG: "tcp"
+      OPENVPN_AUTO_CONFIG: "tcp"
       OPENVPN_USERS: "client1,client2,client3"
     image: hyperpaint/openvpn-server:1.2.0-2.6.12-r1
     networks:
