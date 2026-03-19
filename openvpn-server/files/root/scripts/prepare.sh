@@ -98,13 +98,13 @@ fi
 
 # ccd
 if [ -d "$CCD_DIR/" ]; then
-  log "$CCD_DIR found"
+  log "$CCD_DIR/ found"
 else
-  log "$CCD_DIR not found, creating..."
+  log "$CCD_DIR/ not found, creating..."
 
-  mkdir "$CCD_DIR"
-  chmod 755 "$CCD_DIR"
-  log "$CCD_DIR created"
+  mkdir "$CCD_DIR/"
+  chmod 755 "$CCD_DIR/"
+  log "$CCD_DIR/ created"
 fi
 
 # ovpn
