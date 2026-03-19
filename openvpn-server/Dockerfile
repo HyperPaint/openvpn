@@ -30,4 +30,5 @@ EXPOSE 1194/tcp
 EXPOSE 1194/udp
 
 WORKDIR "/root/scripts/"
-ENTRYPOINT ["/bin/bash","-c","/root/scripts/hbdl/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash"]
+CMD ["-c","/root/scripts/hbdl/entrypoint.sh"]

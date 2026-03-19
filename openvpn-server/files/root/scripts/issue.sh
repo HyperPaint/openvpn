@@ -6,33 +6,37 @@ source "/root/scripts/hbdl/log.sh"
 
 client_name="$1"
 
+client_key_file="$CERTS_DIR/client_$client_name.key"
+client_csr_file="$CERTS_DIR/client_$client_name.csr"
+client_crt_file="$CERTS_DIR/client_$client_name.crt"
+
 if [[ -z "$client_name" ]]; then
   error "Client's name is not specified"
   exit 1
 fi
 
-if [[ -f "$CERTS_DIR/client_$client_name.key" ]]; then
-  log "$CERTS_DIR/client_$client_name.key found"
+if [[ -f "$client_key_file" ]]; then
+  log "$client_key_file found"
 else
-  log "$CERTS_DIR/client_$client_name.key not found, creating..."
+  log "$client_key_file not found, creating..."
 
-  openssl genrsa -out "$CERTS_DIR/client_$client_name.key" "$KEY_POWER"
-  chmod 755 "$CERTS_DIR/client_$client_name.key"
-  log "$CERTS_DIR/client_$client_name.key created"
+  openssl genrsa -out "$client_key_file" "$KEY_POWER"
+  chmod 755 "$client_key_file"
+  log "$client_key_file created"
 fi
 
-if [ -f "$CERTS_DIR/client_$client_name.pem" ]; then
-  log "$CERTS_DIR/client_$client_name.pem found"
+if [ -f "$client_crt_file" ]; then
+  log "$client_crt_file found"
 else
-  log "$CERTS_DIR/client_$client_name.pem not found, creating..."
+  log "$client_crt_file not found, creating..."
 
-  openssl req -new -key "$CERTS_DIR/client_$client_name.key" -subj "${CERTS_DN_CLIENT_BASE}_${client_name}" -out "$CERTS_DIR/client_$client_name.csr"
-  chmod 755 "$CERTS_DIR/client_$client_name.csr"
-  log "$CERTS_DIR/client_$client_name.csr created"
+  openssl req -new -key "$client_key_file" -subj "${CERTS_DN_CLIENT_BASE}_${client_name}" -out "$client_csr_file"
+  chmod 755 "$client_csr_file"
+  log "$client_csr_file created"
 
-  openssl x509 -req -in "$CERTS_DIR/client_$client_name.csr" -days "$ISSUE_DAYS" -CA "$CERTS_DIR/ca.pem" -CAkey "$CERTS_DIR/ca.key" -CAcreateserial -out "$CERTS_DIR/client_$client_name.pem"
-  chmod 755 "$CERTS_DIR/client_$client_name.pem"
-  log "$CERTS_DIR/client_$client_name.pem created"
+  openssl x509 -req -in "$client_csr_file" -days "$ISSUE_DAYS" -CA "$CERTS_DIR/ca.crt" -CAkey "$CERTS_DIR/ca.key" -CAcreateserial -out "$client_crt_file"
+  chmod 755 "$client_crt_file"
+  log "$client_crt_file created"
 fi
 
 if [[ -f "$CCD_DIR/client_$client_name" ]]; then
@@ -45,4 +49,4 @@ else
   log "$CCD_DIR/client_$client_name ccd created"
 fi
 
-/root/scripts/ovpn.sh "$client_name" "$CERTS_DIR/client_$client_name.key" "$CERTS_DIR/client_$client_name.pem"
+/root/scripts/ovpn.sh "$client_name" "$client_key_file" "$client_crt_file"

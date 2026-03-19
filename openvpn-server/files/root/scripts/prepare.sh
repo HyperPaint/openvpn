@@ -27,18 +27,14 @@ else
 fi
 
 # ca pem
-if [ -f "$CERTS_DIR/ca.pem" ]; then
-  log "$CERTS_DIR/ca.pem found"
+if [ -f "$CERTS_DIR/ca.crt" ]; then
+  log "$CERTS_DIR/ca.crt found"
 else
-  log "$CERTS_DIR/ca.pem not found, creating..."
+  log "$CERTS_DIR/ca.crt not found, creating..."
 
-  openssl req -new -key "$CERTS_DIR/ca.key" -subj "$CERTS_DN_CA" -out "$CERTS_DIR/ca.csr"
-  chmod 755 "$CERTS_DIR/ca.csr"
-  log "$CERTS_DIR/ca.csr created"
-
-  openssl x509 -req -in "$CERTS_DIR/ca.csr" -days "$ISSUE_DAYS" -key "$CERTS_DIR/ca.key" -extfile "$WORK_DIR/openssl_ca.conf" -out "$CERTS_DIR/ca.pem"
-  chmod 755 "$CERTS_DIR/ca.pem"
-  log "$CERTS_DIR/ca.pem created"
+  openssl req -x509 -key "$CERTS_DIR/ca.key" -subj "$CERTS_DN_CA" -days "$ISSUE_DAYS" -addext "basicConstraints=critical,CA:true" -out "$CERTS_DIR/ca.crt"
+  chmod 755 "$CERTS_DIR/ca.crt"
+  log "$CERTS_DIR/ca.crt created"
 fi
 
 # server key
@@ -53,18 +49,18 @@ else
 fi
 
 # server pem
-if [ -f "$CERTS_DIR/server.pem" ]; then
-  log "$CERTS_DIR/server.pem found"
+if [ -f "$CERTS_DIR/server.crt" ]; then
+  log "$CERTS_DIR/server.crt found"
 else
-  log "$CERTS_DIR/server.pem not found, creating..."
+  log "$CERTS_DIR/server.crt not found, creating..."
 
   openssl req -new -key "$CERTS_DIR/server.key" -subj "$CERTS_DN_SERVER" -out "$CERTS_DIR/server.csr"
   chmod 755 "$CERTS_DIR/server.csr"
   log "$CERTS_DIR/server.csr created"
 
-  openssl x509 -req -in "$CERTS_DIR/server.csr" -days "$ISSUE_DAYS" -CAkey "$CERTS_DIR/ca.key" -CA "$CERTS_DIR/ca.pem" -CAcreateserial -out "$CERTS_DIR/server.pem"
-  chmod 755 "$CERTS_DIR/server.pem"
-  log "$CERTS_DIR/server.pem created"
+  openssl x509 -req -in "$CERTS_DIR/server.csr" -days "$ISSUE_DAYS" -CAkey "$CERTS_DIR/ca.key" -CA "$CERTS_DIR/ca.crt" -CAcreateserial -out "$CERTS_DIR/server.crt"
+  chmod 755 "$CERTS_DIR/server.crt"
+  log "$CERTS_DIR/server.crt created"
 fi
 
 # diffie hellman
@@ -122,99 +118,124 @@ else
   log "$OVPN_DIR/ created"
 fi
 
+# routes.txt
+if [[ -f "$WORK_DIR/routes.txt" ]]; then
+  log "$WORK_DIR/routes.txt found"
+else
+  {
+    echo 'redirect-gateway def1 bypass-dhcp'
+    echo 'dhcp-option DNS 8.8.8.8'
+    echo 'dhcp-option DNS 8.8.4.4'
+    echo 'route 8.8.8.8 255.255.255.255 vpn_gateway'
+    echo 'route 8.8.4.4 255.255.255.255 vpn_gateway'
+  } > "$WORK_DIR/routes.txt"
+
+  log "$WORK_DIR/routes.txt created"
+fi
+
 # server.conf
-if [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
-  log "VPN auto-config as TCP server"
-
-  {
-    echo 'dev tun'
-    echo 'proto tcp'
-    echo "port $OPENVPN_SERVER_PORT"
-    echo ''
-    echo "ca $CERTS_DIR/ca.pem"
-    echo "key $CERTS_DIR/server.key"
-    echo "cert $CERTS_DIR/server.pem"
-    echo "dh $CERTS_DIR/diffie-hellman.pem"
-    echo "tls-auth $CERTS_DIR/tls-auth.key 0"
-    echo ''
-    echo 'topology subnet'
-    echo 'client-to-client'
-    echo "server $OPENVPN_AUTO_CONFIG_SERVER"
-    echo ''
-    echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
-    echo "client-config-dir $CCD_DIR"
-    echo 'ccd-exclusive'
-    echo ''
-    if [[ -f "$WORK_DIR/push" ]]; then
-      cat "$WORK_DIR/push"
-    fi
-    echo ''
-    echo 'keepalive 1 3'
-    echo 'cipher AES-256-GCM'
-    echo 'max-clients 255'
-    echo ''
-    echo 'persist-key'
-    echo 'persist-tun'
-    echo ''
-    echo 'verb 3'
-  } > "$WORK_DIR/server.conf"
-
-  log "$WORK_DIR/server.conf created"
-fi
-
-if [[ "$OPENVPN_AUTO_CONFIG" == "udp" ]]; then
-  log "VPN auto-config as UDP server"
-
-  {
-    echo 'dev tun'
-    echo 'proto udp'
-    echo "port $OPENVPN_SERVER_PORT"
-    echo ''
-    echo "ca $CERTS_DIR/ca.pem"
-    echo "key $CERTS_DIR/server.key"
-    echo "cert $CERTS_DIR/server.pem"
-    echo "dh $CERTS_DIR/diffie-hellman.pem"
-    echo "tls-auth $CERTS_DIR/tls-auth.key 0"
-    echo ''
-    echo 'topology subnet'
-    echo 'client-to-client'
-    echo "server $OPENVPN_AUTO_CONFIG_SERVER"
-    echo ''
-    echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
-    echo "client-config-dir $CCD_DIR"
-    echo 'ccd-exclusive'
-    echo ''
-    if [[ -f "$WORK_DIR/push" ]]; then
-      cat "$WORK_DIR/push"
-    fi
-    echo ''
-    echo 'fast-io' # linux, udp
-    echo ''
-    echo 'keepalive 1 3'
-    echo 'cipher AES-256-GCM'
-    echo 'max-clients 255'
-    echo ''
-    echo 'persist-key'
-    echo 'persist-tun'
-    echo ''
-    echo 'verb 3'
-    echo ''
-    echo 'explicit-exit-notify' # udp
-  } > "$WORK_DIR/server.conf"
-
-  log "$WORK_DIR/server.conf created"
-fi
-
-log "VPN auto-config disabled"
-
 if [[ -f "$WORK_DIR/server.conf" ]]; then
   log "$WORK_DIR/server.conf found"
 else
-  error "$WORK_DIR/server.conf not found"
-  exit 1
+  if [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
+    log "VPN auto-config as TCP server"
+
+    {
+      echo 'dev tun'
+      echo 'proto tcp'
+      echo 'local 0.0.0.0'
+      echo "port $OPENVPN_SERVER_PORT"
+      echo ''
+      echo "ca $CERTS_DIR/ca.crt"
+      echo "key $CERTS_DIR/server.key"
+      echo "cert $CERTS_DIR/server.crt"
+      echo "dh $CERTS_DIR/diffie-hellman.pem"
+      echo "tls-auth $CERTS_DIR/tls-auth.key 0"
+      echo ''
+      echo 'topology subnet'
+      echo 'client-to-client'
+      echo "server $OPENVPN_AUTO_CONFIG_SERVER"
+      echo ''
+      echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
+      echo "client-config-dir $CCD_DIR"
+      echo 'ccd-exclusive'
+      echo ''
+      echo '# BEGIN routes.txt'
+      while read -r line; do
+        echo "push \"$line\""
+      done < "$WORK_DIR/routes.txt"
+      echo '# END routes.txt'
+      echo ''
+      echo 'keepalive 10 120'
+      echo 'cipher AES-256-GCM'
+      echo 'max-clients 255'
+      echo ''
+      echo 'persist-key'
+      echo 'persist-tun'
+      echo ''
+      echo "status $WORK_DIR/status.log"
+      echo ''
+      echo 'verb 3'
+    } > "$WORK_DIR/server.conf"
+
+    log "$WORK_DIR/server.conf created"
+  elif [[ "$OPENVPN_AUTO_CONFIG" == "udp" ]]; then
+    log "VPN auto-config as UDP server"
+
+    {
+      echo 'dev tun'
+      echo 'proto udp'
+      echo 'local 0.0.0.0'
+      echo "port $OPENVPN_SERVER_PORT"
+      echo ''
+      echo "ca $CERTS_DIR/ca.crt"
+      echo "key $CERTS_DIR/server.key"
+      echo "cert $CERTS_DIR/server.crt"
+      echo "dh $CERTS_DIR/diffie-hellman.pem"
+      echo "tls-auth $CERTS_DIR/tls-auth.key 0"
+      echo ''
+      echo 'topology subnet'
+      echo 'client-to-client'
+      echo "server $OPENVPN_AUTO_CONFIG_SERVER"
+      echo ''
+      echo "ifconfig-pool-persist $WORK_DIR/ipp.txt"
+      echo "client-config-dir $CCD_DIR"
+      echo 'ccd-exclusive'
+      echo ''
+      echo '# BEGIN routes.txt'
+      while read -r line; do
+        echo "push \"$line\""
+      done < "$WORK_DIR/routes.txt"
+      echo '# END routes.txt'
+      echo ''
+      echo 'fast-io' # linux, udp
+      echo ''
+      echo 'keepalive 10 120'
+      echo 'cipher AES-256-GCM'
+      echo 'max-clients 255'
+      echo ''
+      echo 'persist-key'
+      echo 'persist-tun'
+      echo ''
+      echo "status $WORK_DIR/status.log"
+      echo ''
+      echo 'verb 3'
+      echo ''
+      echo 'explicit-exit-notify 1' # udp
+    } > "$WORK_DIR/server.conf"
+
+    log "$WORK_DIR/server.conf created"
+  else
+    log "VPN auto-config disabled"
+
+    error "$WORK_DIR/server.conf not found"
+    exit 1
+  fi
 fi
 
+# connections.txt
 if [[ -z "$OPENVPN_SERVER_ADDRESS" ]]; then
+  log 'Request to ifconfig.me ...'
   OPENVPN_SERVER_ADDRESS="$(curl "ifconfig.me")"
   export OPENVPN_SERVER_ADDRESS
 fi
@@ -222,4 +243,51 @@ fi
 log "OpenVPN server address is $OPENVPN_SERVER_ADDRESS"
 log "OpenVPN server port is $OPENVPN_SERVER_PORT"
 
-/root/scripts/users.sh
+if [[ -f "$WORK_DIR/connections.txt" ]]; then
+  log "$WORK_DIR/connections.txt found"
+elif [[ "$OPENVPN_AUTO_CONFIG" == "tcp" ]]; then
+  {
+    echo '<connection>'
+    echo "    remote $OPENVPN_SERVER_ADDRESS $OPENVPN_SERVER_PORT tcp"
+    echo '</connection>'
+  } > "$WORK_DIR/connections.txt"
+
+  log "$WORK_DIR/connections.txt created"
+elif [[ "$OPENVPN_AUTO_CONFIG" == "udp" ]]; then
+  {
+    echo '<connection>'
+    echo "    remote $OPENVPN_SERVER_ADDRESS $OPENVPN_SERVER_PORT udp"
+    echo '    explicit-exit-notify 1'
+    echo '</connection>'
+  } > "$WORK_DIR/connections.txt"
+
+  log "$WORK_DIR/connections.txt created"
+else
+  error "$WORK_DIR/connections.txt not found"
+  exit 1
+fi
+
+# users
+if [[ "$OPENVPN_USERS_ENABLED" == 1 ]]; then
+  # shellcheck disable=SC2206
+  array=(${OPENVPN_USERS//,/ })
+  array_full="${array[*]}"
+
+  for item in "$CCD_DIR"/*; do
+    [[ -e "$item" ]] || break
+
+    client="$(basename "${item/client_/}")"
+
+    if [[ ! " $array_full " =~ [[:space:]]${client}[[:space:]] ]]; then
+      log "Revoke $client"
+      /root/scripts/revoke.sh "$client"
+    fi
+  done
+
+  for item in "${array[@]}"; do
+    if [[ ! -f "$CCD_DIR/client_$item" ]]; then
+      log "Issue $item"
+      /root/scripts/issue.sh "$item"
+    fi
+  done
+fi

@@ -6,12 +6,23 @@ source "/root/scripts/hbdl/log.sh"
 
 client_name="$1"
 client_key_file="$2"
-client_pem_file="$3"
-ca_pem_file="$CERTS_DIR/ca.pem"
+client_crt_file="$3"
+
+ca_crt_file="$CERTS_DIR/ca.crt"
 tls_auth_file="$CERTS_DIR/tls-auth.key"
 
 if [[ -z "$client_name" ]]; then
   error "Client's name is not specified"
+  exit 1
+fi
+
+if [[ -z "$client_key_file" ]]; then
+  error "Client's key is not specified"
+  exit 1
+fi
+
+if [[ -z "$client_crt_file" ]]; then
+  error "Client's cert is not specified"
   exit 1
 fi
 
@@ -21,16 +32,16 @@ else
   error "$client_key_file not found"
 fi
 
-if [[ -f "$client_pem_file" ]]; then
-  log "$client_pem_file found"
+if [[ -f "$client_crt_file" ]]; then
+  log "$client_crt_file found"
 else
-  error "$client_pem_file not found"
+  error "$client_crt_file not found"
 fi
 
-if [[ -f "$ca_pem_file" ]]; then
-  log "$ca_pem_file found"
+if [[ -f "$ca_crt_file" ]]; then
+  log "$ca_crt_file found"
 else
-  error "$ca_pem_file not found"
+  error "$ca_crt_file not found"
 fi
 
 if [[ -f "$tls_auth_file" ]]; then
@@ -48,9 +59,9 @@ log "$OVPN_DIR/$client_name.ovpn creating..."
   echo 'resolv-retry infinite'
   echo 'nobind'
   echo ''
-  if [[ -f "$WORK_DIR/connection" ]]; then
-    sed "s/OPENVPN_SERVER_ADDRESS/$OPENVPN_SERVER_ADDRESS/g" "$WORK_DIR/connection" | sed "s/OPENVPN_SERVER_PORT/$OPENVPN_SERVER_PORT/g"
-  fi
+  echo '# BEGIN connections.txt'
+  cat "$WORK_DIR/connections.txt"
+  echo '# END connections.txt'
   echo ''
   echo 'allow-pull-fqdn'
   echo '#redirect-gateway def1 bypass-dhcp'
@@ -67,20 +78,20 @@ log "$OVPN_DIR/$client_name.ovpn creating..."
   echo 'mute-replay-warnings'
   echo ''
   echo '<ca>'
-  cat "$ca_pem_file"
+  cat "$ca_crt_file"
   echo '</ca>'
   echo '<key>'
   cat "$client_key_file"
   echo '</key>'
   echo '<cert>'
-  cat "$client_pem_file"
+  cat "$client_crt_file"
   echo '</cert>'
   echo '<tls-auth>'
   cat "$tls_auth_file"
   echo '</tls-auth>'
   echo 'key-direction 1'
   echo ''
-  echo 'keepalive 1 3'
+  echo 'keepalive 10 120'
   echo 'cipher AES-256-GCM'
   echo ''
   echo 'verb 3'

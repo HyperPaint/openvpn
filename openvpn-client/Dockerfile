@@ -6,4 +6,5 @@ COPY --chown=root:root --chmod=755 ./files/ /
 COPY --chown=root:root --chmod=755 ./hyperpaint-bash-docker-lib/ /root/scripts/hbdl/
 
 WORKDIR "/root/scripts/"
-ENTRYPOINT ["/bin/bash","-c","/root/scripts/hbdl/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash"]
+CMD ["-c","/root/scripts/hbdl/entrypoint.sh"]
